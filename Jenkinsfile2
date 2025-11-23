@@ -6,46 +6,53 @@ pipeline {
     }
 
     stages {
+
         stage ("Git Checkout") {
             steps {
                 git 'https://github.com/Prashant4656/DevOps-Project-Zomato-Kastro.git'
             }
         }
-        
+
         stage ("Build Docker Image") {
             steps {
                 sh "docker build -t prashant4656/zomatoapp:1.0 ."
             }
         }
+
         stage ("Tag & Push to DockerHub") {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'dockerhubpass', usernameVariable: 'dockerhublogin')]) {
                         sh 'docker login -u ${dockerhublogin} -p ${dockerhubpass}'
-                        sh "docker push prashant4656/zomatoapp:1.0 "
+                        sh "docker push prashant4656/zomatoapp:1.0"
                     }
                 }
             }
         }
+
         stage('Config & Deployment') {
             steps {
-               withCredentials([
-                 aws(credentialsId: 'awslogin', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'),
-                 file(credentialsId: 'bookmyshow_pem', variable: 'PEMFILE')
-        ]) {
-            dir('terraformfiles') {
-                sh '''
-                    ls -l "$PEMFILE"            # show PEM exists
-                    chmod 600 "$PEMFILE"        # correct way
-                    export TF_VAR_pem_file="$PEMFILE"
-                    terraform init
-                    terraform validate
-                    terraform apply --auto-approve
-                '''
+                withCredentials([
+                    aws(credentialsId: 'awslogin', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'),
+                    file(credentialsId: 'bookmyshow_pem', variable: 'PEMFILE')
+                ]) {
+
+                    dir('terraformfiles') {
+                        sh '''
+                            echo "🔍 Checking PEM file:"
+                            ls -l "$PEMFILE"
+
+                            chmod 600 "$PEMFILE"
+
+                            export TF_VAR_pem_file="$PEMFILE"
+
+                            terraform init
+                            terraform validate
+                            terraform apply --auto-approve
+                        '''
+                    }
+                }
             }
         }
-    }
-}
-
     }
 }
