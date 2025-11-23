@@ -40,10 +40,3 @@ pipeline {
     }
 }
 }
-stage ("Deploy to Container") {
-            steps {
-                sh 'docker run -d --name zomato -p 3000:3000 kastrov/zomato:latest'
-            }
-        }
-}
-}
