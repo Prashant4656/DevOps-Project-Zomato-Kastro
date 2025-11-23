@@ -33,7 +33,7 @@ pipeline {
                 
                 withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'awslogin', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                     dir('terraformfiles') {
-                    sh 'sudo chmod 600 jyoti.pem'
+                    sh 'sudo chmod 600 $PEMFILE'
                     sh 'terraform init'
                     sh 'terraform validate'
                     sh 'terraform apply --auto-approve'
