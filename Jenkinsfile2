@@ -11,5 +11,11 @@ pipeline {
                 git 'https://github.com/Prashant4656/DevOps-Project-Zomato-Kastro.git'
             }
         }
+        
+        stage ("Build Docker Image") {
+            steps {
+                sh "docker build -t prashant4656/zomatoapp:1.0 ."
+            }
+        }
     }
 }
