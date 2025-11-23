@@ -4,55 +4,46 @@ pipeline {
         jdk 'JAVA_HOME'
         nodejs 'nodejs25'
     }
-
+    
     stages {
-
+        
         stage ("Git Checkout") {
             steps {
-                git 'https://github.com/Prashant4656/DevOps-Project-Zomato-Kastro.git'
+                git 'https://github.com/KastroVKiran/Zomato-Project-Kastro.git'
             }
         }
-
-        stage ("Build Docker Image") {
+     
+    stage ("Build Docker Image") {
             steps {
                 sh "docker build -t prashant4656/zomatoapp:1.0 ."
             }
         }
-
-        stage ("Tag & Push to DockerHub") {
+    stage ("Tag & Push to DockerHub") {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'dockerhubpass', usernameVariable: 'dockerhublogin')]) {
                         sh 'docker login -u ${dockerhublogin} -p ${dockerhubpass}'
-                        sh "docker push prashant4656/zomatoapp:1.0"
+                        sh "docker push prashant4656/zomatoapp:1.0  "
                     }
                 }
             }
         }
-
         stage('Config & Deployment') {
             steps {
-                withCredentials([
-                    aws(credentialsId: 'awslogin', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'),
-                    file(credentialsId: 'bookmyshow_pem', variable: 'PEMFILE')
-                ]) {
-
+                
+                withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'awslogin', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                     dir('terraformfiles') {
-                        sh '''
-                            echo "🔍 Checking PEM file:"
-                            ls -l "$PEMFILE"
-
-                            chmod 600 "$PEMFILE"
-
-                            export TF_VAR_pem_file="$PEMFILE"
-
-                            terraform init
-                            terraform validate
-                            terraform apply --auto-approve
-                        '''
-                    }
-                }
+                    sh 'terraform init'
+                    sh 'terraform validate'
+                    sh 'terraform apply --auto-approve'
+}
+    }
+}
+}
+stage ("Deploy to Container") {
+            steps {
+                sh 'docker run -d --name zomato -p 3000:3000 kastrov/zomato:latest'
             }
         }
-    }
+}
 }
