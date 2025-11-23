@@ -1,3 +1,7 @@
+variable "pem_file" {
+  description = "Path to SSH private key"
+  type        = string
+}
 resource "aws_instance" "test-server" {
   ami = "ami-0fa3fe0fa7920f68e"
   instance_type = "t3.small"
@@ -6,7 +10,7 @@ resource "aws_instance" "test-server" {
   connection {
      type = "ssh"
      user = "ec2-user"
-     private_key = file("./bookmyshow.pem")
+     private_key = file(var.pem_file)
      host = self.public_ip
      }
   provisioner "remote-exec" {
