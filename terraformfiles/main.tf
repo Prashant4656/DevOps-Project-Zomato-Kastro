@@ -1,13 +1,12 @@
 variable "pem_file" {
-  description = "PEM file path from Jenkins"
+  description = "Path to SSH private key"
   type        = string
 }
-
 resource "aws_instance" "test-server" {
   ami           = "ami-0fa3fe0fa7920f68e"
   instance_type = "t3.small"
   key_name      = "bookmyshow"  # your EC2 key pair (must already exist)
-
+  vpc_security_group_ids = ["sg-05eb5a556e628a155"]
   connection {
     type        = "ssh"
     user        = "ec2-user"
