@@ -35,8 +35,7 @@ pipeline {
                     dir('terraformfiles') {
                     sh 'terraform init'
                     sh 'terraform validate'
-                    sh 'terraform apply --auto-approve -var="pem_file=$PEMFILE"
-'
+                    sh 'terraform apply --auto-approve -var="pem_file=$PEMFILE"'
 }
     }
 }
