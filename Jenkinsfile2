@@ -4,15 +4,8 @@ pipeline {
         jdk 'JAVA_HOME'
         nodejs 'nodejs25'
     }
-    environment {
-        SCANNER_HOME=tool 'sonar-scanner'
-    }
+
     stages {
-        stage ("clean workspace") {
-            steps {
-                cleanWs()
-            }
-        }
         stage ("Git Checkout") {
             steps {
                 git 'https://github.com/Prashant4656/DevOps-Project-Zomato-Kastro.git'
