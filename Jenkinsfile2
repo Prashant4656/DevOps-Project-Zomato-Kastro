@@ -29,7 +29,7 @@ pipeline {
         }
         stage('Use PEM') {
             steps {
-                withCredentials([file(credentialsId: 'bookmyshow_pem', variable: 'PEMFILE')]) {
+                withCredentials([file(credentialsId: 'bookmyshow.pem', variable: 'PEMFILE')]) {
                     sh '''
                         chmod 600 "$PEMFILE"
                         ssh -i "$PEMFILE" ec2-user@server-ip "hostname"
