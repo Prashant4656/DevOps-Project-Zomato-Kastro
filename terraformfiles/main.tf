@@ -4,8 +4,8 @@ variable "pem_file" {
 }
 
 resource "aws_instance" "test-server" {
-  ami           = "ami-0c55b159cbfafe1f0"
-  instance_type = "t2.micro"
+  ami           = "ami-0fa3fe0fa7920f68e"
+  instance_type = "t3.small"
   key_name      = "bookmyshow"  # your EC2 key pair (must already exist)
 
   connection {
@@ -17,6 +17,10 @@ resource "aws_instance" "test-server" {
 
   provisioner "local-exec" {
     command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook ansiblebook.yml -i '${self.public_ip},' --private-key ${var.pem_file}"
+}
+ provisioner "local-exec" {
+     command = "ansible-playbook /var/lib/jenkins/workspace/zomatoapp/terraformfiles/ansiblebook.yml"
+     }
   }
 }
 
