@@ -43,24 +43,11 @@ pipeline {
                     
                     file(credentialsId: 'bookmyshow_pem', variable: 'PEMFILE')
                 ]) {
-
-                    dir('terraformfiles') {
-
-                        sh '''
-                            echo "PEMFILE = $PEMFILE"
-                            ls -l "$PEMFILE"
-
-                            if [ -d "$PEMFILE" ]; then
-                                echo "❌ ERROR: PEMFILE points to a directory, not a file"
-                                exit 1
-                            fi
-
-                            chmod 600 "$PEMFILE"
-
-                            terraform init
-                            terraform validate
-                            terraform apply --auto-approve -var="pem_file=$PEMFILE"
-                        '''
+                     sh """
+                        chmod 600 $PEMFILE
+                        terraform apply -auto-approve -var pem_file=$PEMFILE
+                     """
+                    
                     }
                 }
             }
