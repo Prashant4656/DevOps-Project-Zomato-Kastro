@@ -27,18 +27,25 @@ pipeline {
                 }
             }
         }
-         stage('Config & Deployment') {
+        stage('Config & Deployment') {
             steps {
-                
-               withCredentials([file(credentialsId: 'bookmyshow_pem', variable: 'PEMFILE')]) {
-                    dir('terraformfiles') {
-                    sh 'sudo chmod 600 bookmyshow.pem'
-                    sh 'terraform init'
-                    sh 'terraform validate'
-                    sh 'terraform apply --auto-approve'
-}
+               withCredentials([
+                 aws(credentialsId: 'awslogin', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'),
+                 file(credentialsId: 'bookmyshow_pem', variable: 'PEMFILE')
+        ]) {
+            dir('terraformfiles') {
+                sh '''
+                    ls -l "$PEMFILE"            # show PEM exists
+                    chmod 600 "$PEMFILE"        # correct way
+                    export TF_VAR_pem_file="$PEMFILE"
+                    terraform init
+                    terraform validate
+                    terraform apply --auto-approve
+                '''
+            }
+        }
     }
-}
-}
+
+
     }
 }
